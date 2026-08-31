@@ -1,0 +1,139 @@
+/* =====================================================
+   CodeSwipe – Global Styles
+   Tailwind base + custom CSS variables and utilities
+   ===================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom Properties ─────────────────────────────── */
+:root {
+  --bg-page:     #0a0a14;
+  --bg-card:     #1a1b2e;
+  --bg-sidebar:  #16213e;
+  --border:      rgba(99, 102, 241, 0.2);
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+  --brand:       #6366f1;
+  --brand-light: #8b5cf6;
+  --cyan:        #22d3ee;
+}
+
+/* ── Base Reset ────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar              { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track        { background: transparent; }
+  ::-webkit-scrollbar-thumb        { background: rgba(99,102,241,0.4); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover  { background: rgba(99,102,241,0.7); }
+
+  ::selection { background: rgba(99,102,241,0.4); color: #fff; }
+}
+
+/* ── Component Utilities ───────────────────────────── */
+@layer components {
+  /* Glass card */
+  .glass {
+    background: rgba(26, 27, 46, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Brand button */
+  .btn-brand {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    box-shadow: 0 4px 24px rgba(99,102,241,0.3);
+  }
+  .btn-brand:hover  { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(99,102,241,0.5); }
+  .btn-brand:active { transform: translateY(0); }
+
+  /* Focus ring */
+  .focus-ring {
+    @apply outline-none ring-0;
+  }
+  .focus-ring:focus-visible {
+    @apply ring-2 ring-brand-500 ring-offset-2 ring-offset-surface-900;
+  }
+
+  /* Difficulty badges */
+  .badge-beginner     { @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30; }
+  .badge-intermediate { @apply bg-amber-500/20   text-amber-400   border border-amber-500/30;   }
+  .badge-advanced     { @apply bg-rose-500/20    text-rose-400    border border-rose-500/30;     }
+  .badge-expert       { @apply bg-purple-500/20  text-purple-400  border border-purple-500/30;   }
+
+  /* Code block */
+  .code-block {
+    @apply font-mono text-sm rounded-xl p-4 overflow-x-auto;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(99,102,241,0.15);
+  }
+
+  /* Nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200;
+    color: var(--text-secondary);
+  }
+  .nav-item:hover   { background: rgba(99,102,241,0.1); color: var(--text-primary); }
+  .nav-item.active  { background: rgba(99,102,241,0.2); color: #fff; }
+  .nav-item.active svg { color: #6366f1; }
+}
+
+/* ── Animated Background Grid ─────────────────────── */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Particle / Orb Blobs ─────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.25;
+}
+.orb-1 { width: 600px; height: 600px; background: #6366f1; top: -200px; left: -200px; animation: float 8s ease-in-out infinite; }
+.orb-2 { width: 400px; height: 400px; background: #8b5cf6; top: 30%;   right: -100px; animation: float 10s ease-in-out 2s infinite; }
+.orb-3 { width: 300px; height: 300px; background: #22d3ee; bottom: 10%; left: 30%;    animation: float 7s ease-in-out 4s infinite; }
+
+/* ── Ripple ───────────────────────────────────────── */
+.ripple-container { position: relative; overflow: hidden; }
+.ripple-container .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+/* ── Page transitions ─────────────────────────────── */
+.page-enter { animation: fadeIn 0.3s ease-out; }

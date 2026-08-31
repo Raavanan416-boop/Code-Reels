@@ -1,0 +1,48 @@
+/** @type {import('../models/Language').Language[]} */
+export const LANGUAGES = [
+  {
+    id: 'c',
+    name: 'C',
+    description: 'The foundational language of modern computing, systems, and hardware.',
+    color: '#a8b9cc',
+    gradient: 'from-slate-600 to-slate-800',
+    difficulty: 'intermediate',
+    emoji: '⚙️',
+  },
+  {
+    id: 'cpp',
+    name: 'C++',
+    description: 'High-performance programming for games, engines, and system software.',
+    color: '#00599c',
+    gradient: 'from-blue-600 to-indigo-900',
+    difficulty: 'advanced',
+    emoji: '🚀',
+  },
+  {
+    id: 'python',
+    name: 'Python',
+    description: 'Clean, readable, and powerful. Loved for AI, data science, and web APIs.',
+    color: '#3776ab',
+    gradient: 'from-sky-500 to-emerald-600',
+    difficulty: 'beginner',
+    emoji: '🐍',
+  },
+  {
+    id: 'java',
+    name: 'Java',
+    description: 'Object-oriented, robust, and enterprise-grade cross-platform power.',
+    color: '#ea2d2e',
+    gradient: 'from-red-500 to-amber-700',
+    difficulty: 'intermediate',
+    emoji: '☕',
+  },
+  {
+    id: 'javascript',
+    name: 'JavaScript',
+    description: 'The heartbeat of the modern web. Build full-stack apps and interfaces.',
+    color: '#f7df1e',
+    gradient: 'from-yellow-400 to-amber-600',
+    difficulty: 'beginner',
+    emoji: '⚡',
+  },
+];
