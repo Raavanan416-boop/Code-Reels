@@ -7,6 +7,9 @@ const STORAGE_ACTIVE_LANG = 'codeswipe_active_language';
 const STORAGE_COMPLETED_KEY = 'codeswipe_completed_lessons';
 const STORAGE_SAVED_KEY = 'codeswipe_saved_lessons';
 const STORAGE_STATS_KEY = 'codeswipe_user_stats';
+const STORAGE_MISTAKES_KEY = 'codeswipe_mistakes';
+const STORAGE_COMPLETED_BUGS_KEY = 'codeswipe_completed_bugs';
+const STORAGE_COMPLETED_OUTPUTS_KEY = 'codeswipe_completed_outputs';
 
 export const AppProvider = ({ children }) => {
   const [selectedLanguages, setSelectedLanguagesState] = useState(() => {
@@ -52,6 +55,33 @@ export const AppProvider = ({ children }) => {
         : { xp: 140, streak: 3, correctAnswers: 12, wrongAnswers: 3 };
     } catch {
       return { xp: 140, streak: 3, correctAnswers: 12, wrongAnswers: 3 };
+    }
+  });
+
+  const [mistakeHistory, setMistakeHistory] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_MISTAKES_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [completedBugIds, setCompletedBugIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_COMPLETED_BUGS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [completedOutputIds, setCompletedOutputIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_COMPLETED_OUTPUTS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
     }
   });
 
@@ -147,6 +177,85 @@ export const AppProvider = ({ children }) => {
     });
   };
 
+  const completeBugChallenge = (bugId, xpReward = 25) => {
+    if (completedBugIds.includes(bugId)) return; // Prevent duplicate XP
+    const nextIds = [...completedBugIds, bugId];
+    setCompletedBugIds(nextIds);
+    try {
+      localStorage.setItem(STORAGE_COMPLETED_BUGS_KEY, JSON.stringify(nextIds));
+    } catch (e) {
+      console.error('Failed to save completed bugs', e);
+    }
+
+    setStats((prev) => {
+      const nextStats = { ...prev, xp: prev.xp + xpReward };
+      try {
+        localStorage.setItem(STORAGE_STATS_KEY, JSON.stringify(nextStats));
+      } catch (e) {
+        console.error('Failed to save stats', e);
+      }
+      return nextStats;
+    });
+
+    addToast(`+${xpReward} XP earned! Bug Squashed! 🐛✨`, 'success');
+  };
+
+  const completeOutputChallenge = (outputId, xpReward = 20) => {
+    if (completedOutputIds.includes(outputId)) return; // Prevent duplicate XP
+    const nextIds = [...completedOutputIds, outputId];
+    setCompletedOutputIds(nextIds);
+    try {
+      localStorage.setItem(STORAGE_COMPLETED_OUTPUTS_KEY, JSON.stringify(nextIds));
+    } catch (e) {
+      console.error('Failed to save completed outputs', e);
+    }
+
+    setStats((prev) => {
+      const nextStats = { ...prev, xp: prev.xp + xpReward };
+      try {
+        localStorage.setItem(STORAGE_STATS_KEY, JSON.stringify(nextStats));
+      } catch (e) {
+        console.error('Failed to save stats', e);
+      }
+      return nextStats;
+    });
+
+    addToast(`+${xpReward} XP earned! Output Predicted Correctly! ⚡`, 'success');
+  };
+
+  const recordMistake = (bugId, questionTitle, languageId) => {
+    setMistakeHistory((prev) => {
+      const existing = prev.find((m) => m.bugId === bugId);
+      let nextHistory;
+      if (existing) {
+        nextHistory = prev.map((m) =>
+          m.bugId === bugId
+            ? { ...m, attempts: m.attempts + 1, lastSeen: new Date().toISOString() }
+            : m
+        );
+      } else {
+        nextHistory = [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            bugId,
+            questionTitle,
+            languageId,
+            attempts: 1,
+            firstSeen: new Date().toISOString(),
+            lastSeen: new Date().toISOString(),
+          },
+        ];
+      }
+      try {
+        localStorage.setItem(STORAGE_MISTAKES_KEY, JSON.stringify(nextHistory));
+      } catch (e) {
+        console.error('Failed to save mistake history', e);
+      }
+      return nextHistory;
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -160,9 +269,15 @@ export const AppProvider = ({ children }) => {
         wrongAnswersCount: stats.wrongAnswers,
         completedLessonIds,
         savedLessonIds,
+        completedBugIds,
+        completedOutputIds,
+        mistakeHistory,
         completeLesson,
         toggleSaveLesson,
         recordAnswer,
+        completeBugChallenge,
+        completeOutputChallenge,
+        recordMistake,
         toasts,
         addToast,
         removeToast,
