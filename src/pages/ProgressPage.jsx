@@ -6,7 +6,7 @@ import ProgressBar from '../components/ui/ProgressBar';
 import Card from '../components/ui/Card';
 
 export default function ProgressPage() {
-  const { userXp, streakCount, completedLessonIds, selectedLanguages } = useApp();
+  const { userXp, streakCount, completedLessonIds, savedLessonIds, selectedLanguages, correctAnswersCount, wrongAnswersCount } = useApp();
 
   const userLevel = Math.floor(userXp / 100) + 1;
   const currentLevelXp = userXp % 100;
@@ -66,6 +66,22 @@ export default function ProgressPage() {
           <div>
             <div className="text-xs text-slate-400 mb-0.5">Lessons Done</div>
             <div className="text-xl font-extrabold text-emerald-400">{completedLessonIds.length}</div>
+          </div>
+        </div>
+
+        {/* Answer Accuracy Stats */}
+        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-center">
+          <div>
+            <div className="text-xs text-slate-400 mb-0.5">Correct ✅</div>
+            <div className="text-xl font-extrabold text-emerald-400">{correctAnswersCount}</div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-400 mb-0.5">Wrong ❌</div>
+            <div className="text-xl font-extrabold text-rose-400">{wrongAnswersCount}</div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-400 mb-0.5">Saved 🔖</div>
+            <div className="text-xl font-extrabold text-brand-300">{savedLessonIds.length}</div>
           </div>
         </div>
       </Card>

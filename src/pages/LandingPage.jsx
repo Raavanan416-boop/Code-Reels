@@ -1,26 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Code2, Sparkles, Terminal, ShieldCheck, Zap } from 'lucide-react';
+import { Code2, Sparkles, Terminal, ShieldCheck, Zap, AlertCircle, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../components/ui/Button';
 
 export default function LandingPage() {
-  const { signInWithGoogle, user } = useAuth();
+  const { signInWithGoogle, error: authContextError, clearError } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState(null);
   const navigate = useNavigate();
 
-  // If already logged in, offer quick jump to learn or language select
   const handleGoogleLogin = async () => {
     setLoading(true);
+    setLocalError(null);
+    if (clearError) clearError();
+
     try {
       await signInWithGoogle();
       navigate('/select-language');
     } catch (err) {
-      console.error('Login error:', err);
+      // Don't treat user closing popup as an unhandled error, show clean UI alert
+      const errorMessage = err?.message || 'Failed to complete Google sign-in. Please try again.';
+      setLocalError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+
+  const activeError = localError || authContextError;
 
   return (
     <div className="relative min-h-screen bg-surface-950 flex flex-col justify-between overflow-hidden bg-grid">
@@ -72,6 +79,25 @@ export default function LandingPage() {
           <p className="text-xs text-slate-400 mb-6">
             Sign in with Google to sync your XP, streak, and language progress.
           </p>
+
+          {/* User-friendly Error Alert */}
+          {activeError && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start justify-between gap-2 text-left animate-fadeIn">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <span>{activeError}</span>
+              </div>
+              <button
+                onClick={() => {
+                  setLocalError(null);
+                  if (clearError) clearError();
+                }}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
 
           <Button
             variant="gradient"

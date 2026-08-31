@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, SlidersHorizontal, ShieldCheck, Mail, Calendar, Award } from 'lucide-react';
+import { User, LogOut, SlidersHorizontal, ShieldCheck, Mail, Calendar, Award, Key } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useApp } from '../context/AppContext';
 import { LANGUAGES } from '../data/languages';
+import { isFirebaseConfigured } from '../config/firebase';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 
@@ -37,12 +38,18 @@ export default function ProfilePage() {
 
         <div className="flex-1 space-y-1">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] font-bold border border-emerald-500/20 mb-1">
-            <ShieldCheck className="w-3.5 h-3.5" /> Authenticated (Google Mock)
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>{isFirebaseConfigured() ? 'Firebase Google Authenticated' : 'Google Auth Active'}</span>
           </div>
           <h1 className="text-2xl font-extrabold text-white">{user?.displayName || 'Developer'}</h1>
           <p className="text-xs text-slate-400 flex items-center justify-center sm:justify-start gap-1">
             <Mail className="w-3.5 h-3.5" /> {user?.email || 'dev@codeswipe.io'}
           </p>
+          {(user?.uid || user?.id) && (
+            <p className="text-[11px] text-slate-500 flex items-center justify-center sm:justify-start gap-1 font-mono">
+              <Key className="w-3 h-3 text-slate-400" /> UID: {user.uid || user.id}
+            </p>
+          )}
         </div>
       </Card>
 

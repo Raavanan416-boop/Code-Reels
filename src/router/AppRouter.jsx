@@ -30,14 +30,39 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const PublicOnlyRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface-950 flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return <Navigate to="/select-language" replace />;
+  }
+
+  return children;
+};
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Landing / Auth */}
-        <Route path="/" element={<LandingPage />} />
+        {/* Public Landing / Auth (Redirect logged-in users away) */}
+        <Route
+          path="/"
+          element={
+            <PublicOnlyRoute>
+              <LandingPage />
+            </PublicOnlyRoute>
+          }
+        />
 
-        {/* Language Selection */}
+        {/* Protected Language Selection */}
         <Route
           path="/select-language"
           element={
